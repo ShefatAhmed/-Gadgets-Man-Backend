@@ -25,6 +25,7 @@ async function run() {
 
     const db = client.db("gadget");
     const flashSalecollection = db.collection("flashSale");
+    const trendingProductscollection = db.collection("trendingProducts");
 
     // flash
     app.post("/api/v1/flash-sale", async (req, res) => {
@@ -46,6 +47,28 @@ async function run() {
       const result = await flashSalecollection
         .find({ flashSale: true })
         .sort({ createdAt: -1 })
+        .toArray();
+      res.send(result);
+    });
+
+    // Trending Products
+
+    app.post("/api/v1/trending-products", async (req, res) => {
+      const { name, image, amount, offer, ratings } = req.body;
+      const data = await trendingProductscollection.insertOne({
+        name,
+        image,
+        amount,
+        offer,
+        ratings,
+      });
+      res.send(data);
+    });
+
+    app.get("/api/v1/trending-products", async (req, res) => {
+      const result = await trendingProductscollection
+        .find()
+        .sort({ ratings: -1 })
         .toArray();
       res.send(result);
     });
