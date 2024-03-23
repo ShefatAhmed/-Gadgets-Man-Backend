@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
+const ObjectId = require("mongodb").ObjectId;
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -25,7 +26,8 @@ async function run() {
 
     const db = client.db("gadget");
     const flashSalecollection = db.collection("flashSale");
-    const trendingProductscollection = db.collection("trendingProducts");
+    const trendingProductscollection = db.collection("products");
+    const productsCollection = db.collection("products");
 
     // flash
     app.post("/api/v1/flash-sale", async (req, res) => {
@@ -70,6 +72,26 @@ async function run() {
         .find()
         .sort({ ratings: -1 })
         .toArray();
+      res.send(result);
+    });
+
+    app.get("/api/v1/products", async (req, res) => {
+      let query = {};
+      if (req.query.category) {
+        query = { category: req.query.category };
+      }
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/api/v1/products", async (req, res) => {
+      const result = await productsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/api/v1/products/:id", async (req, res) => {
+      const productId = req.params.id;
+      const query = { _id: new ObjectId(productId) };
+      const result = await productsCollection.findOne(query);
       res.send(result);
     });
 
