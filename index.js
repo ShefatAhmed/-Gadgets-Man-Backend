@@ -55,14 +55,15 @@ async function run() {
 
     // Trending Products
 
-    app.post("/api/v1/trending-products", async (req, res) => {
+    app.post("/api/v1/products", async (req, res) => {
       const { name, image, amount, offer, ratings } = req.body;
-      const data = await trendingProductscollection.insertOne({
+      const data = await productsCollection.insertOne({
         name,
         image,
         amount,
         offer,
         ratings,
+        description,
       });
       res.send(data);
     });
